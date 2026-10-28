@@ -2,7 +2,7 @@ use gpui::{Action, Context, SharedString};
 use nyaterm_ui::NyaMenuItem;
 
 use crate::features::NyaTermApp;
-use crate::models::{HeaderStatusMode, SmartSplitMode};
+use crate::models::{HeaderStatusMode, NavItem, SmartSplitMode};
 use crate::shortcuts;
 
 /// Commands contain identifiers, never captured window state or presentation callbacks.
@@ -37,6 +37,7 @@ pub(crate) enum TitleMenuCommand {
     TogglePanelMultiOpen,
     ResetPanelLayout,
     TogglePanelVisibility(String),
+    ShowPanel(NavItem),
     TogglePadding,
     ToggleLineNumbers,
     ToggleTimestamps,

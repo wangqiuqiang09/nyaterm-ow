@@ -17,6 +17,7 @@ use super::view_widgets::{
     passive_overlay_layer, selectable_overlay_layer,
 };
 use crate::features::perf::{GpuiPerfContext, record_gpui_perf_sample};
+use crate::features::product_profile;
 use crate::features::runtime_jobs::ActivitySide;
 use crate::theme::ThemePalette;
 
@@ -490,6 +491,11 @@ impl NyaTermApp {
                 && right_overlay_mode
                 && self.shell.mobile_right_panel_open()
                 && self.right_side_open();
+            let rail_inset = if product_profile::SHOW_ACTIVITY_BARS {
+                40.
+            } else {
+                0.
+            };
             let mut surface = div()
                 .flex()
                 .flex_1()
@@ -497,7 +503,7 @@ impl NyaTermApp {
                 .relative()
                 .overflow_hidden()
                 .bg(self.shell_transparent_color(palette.bg))
-                .when(has_left_activity_items, |this| {
+                .when(product_profile::SHOW_ACTIVITY_BARS && has_left_activity_items, |this| {
                     this.child(self.activity_bar(ActivitySide::Left, cx))
                 })
                 .when(
@@ -521,7 +527,7 @@ impl NyaTermApp {
                             .child(self.right_panel(false, window, cx))
                     },
                 )
-                .when(has_right_activity_items, |this| {
+                .when(product_profile::SHOW_ACTIVITY_BARS && has_right_activity_items, |this| {
                     this.child(self.activity_bar(ActivitySide::Right, cx))
                 });
 
@@ -533,7 +539,7 @@ impl NyaTermApp {
                         .absolute()
                         .top_0()
                         .bottom_0()
-                        .left(px(40.))
+                        .left(px(rail_inset))
                         .w(px(width))
                         .flex()
                         .border_r_1()
@@ -559,7 +565,7 @@ impl NyaTermApp {
                         .absolute()
                         .top_0()
                         .bottom_0()
-                        .right(px(40.))
+                        .right(px(rail_inset))
                         .w(px(width))
                         .flex()
                         .border_l_1()
@@ -597,7 +603,7 @@ impl NyaTermApp {
                         .absolute()
                         .top_0()
                         .bottom_0()
-                        .left(px(40.))
+                        .left(px(rail_inset))
                         .flex()
                         .shadow_lg()
                         .on_click(|_, _, cx| cx.stop_propagation())
@@ -625,7 +631,7 @@ impl NyaTermApp {
                         .absolute()
                         .top_0()
                         .bottom_0()
-                        .right(px(40.))
+                        .right(px(rail_inset))
                         .flex()
                         .shadow_lg()
                         .on_click(|_, _, cx| cx.stop_propagation())

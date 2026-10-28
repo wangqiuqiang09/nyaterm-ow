@@ -69,6 +69,7 @@ impl NativeMenuProjection {
             TitleMenu::File,
             TitleMenu::View,
             TitleMenu::Terminal,
+            TitleMenu::Panels,
             TitleMenu::Help,
         ]
         .into_iter()

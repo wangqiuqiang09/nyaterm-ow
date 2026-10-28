@@ -5,7 +5,9 @@ use gpui::{
 use nyaterm_core::truncate_preview;
 use rust_i18n::t;
 
-use crate::features::{NyaTermApp, runtime_jobs::ActivitySide, view_widgets::mono_icon};
+use crate::features::{
+    NyaTermApp, product_profile, runtime_jobs::ActivitySide, view_widgets::mono_icon,
+};
 use crate::models::{
     ActivityBarContextMenuState, ActivityBarContextTarget, ActivityBarEntry,
     ActivityBarLayoutState, ActivityBarZone, BottomPanelMode, MainMode, NavItem, PanelSide,
@@ -85,6 +87,9 @@ impl NyaTermApp {
             .zone(zone)
             .iter()
             .filter(|id| !self.shell.chrome.activity_bar_layout.is_hidden(id))
+            .filter(|id| {
+                NavItem::from_persistence_id(id).is_none_or(product_profile::panel_offered)
+            })
             .filter_map(|id| ActivityBarEntry::from_persistence_id(id))
             .collect()
     }

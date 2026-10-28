@@ -1073,6 +1073,7 @@ fn build_title_menu_bar(
         TitleMenu::View,
         TitleMenu::Terminal,
         TitleMenu::Help,
+        TitleMenu::Panels,
     ]
     .into_iter()
     .map(|menu| {

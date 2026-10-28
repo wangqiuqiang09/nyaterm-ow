@@ -618,6 +618,7 @@ pub(crate) enum TitleMenu {
     View,
     Terminal,
     Help,
+    Panels,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -635,6 +636,7 @@ impl TitleMenu {
             Self::View => "menu.view",
             Self::Terminal => "menu.terminal",
             Self::Help => "menu.help",
+            Self::Panels => "menu.panels",
         }
     }
 
@@ -644,6 +646,7 @@ impl TitleMenu {
             Self::View => "View",
             Self::Terminal => "Terminal",
             Self::Help => "Help",
+            Self::Panels => "Panels",
         }
     }
 }

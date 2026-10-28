@@ -62,6 +62,9 @@ impl NyaTermApp {
     }
 
     pub(in crate::features) fn open_panel(&mut self, item: NavItem, cx: &mut Context<Self>) {
+        if !crate::features::product_profile::panel_offered(item) {
+            return;
+        }
         if item == NavItem::Transfers {
             self.note_file_manager_manual_sidebar_open();
         }

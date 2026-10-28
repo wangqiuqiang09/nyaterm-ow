@@ -216,6 +216,7 @@ impl NyaTermApp {
                 PanelSide::Right => self.shell.panels.active_right,
             };
             return active
+                .filter(|item| crate::features::product_profile::panel_offered(*item))
                 .map(|item| item.persistence_id().to_string())
                 .into_iter()
                 .collect();
@@ -236,7 +237,11 @@ impl NyaTermApp {
         let mut ordered = Vec::new();
         for zone in zones {
             for id in self.shell.chrome.activity_bar_layout.zone(zone) {
-                if open_set.contains(id) && Self::is_stackable_panel_id(id) {
+                if open_set.contains(id)
+                    && Self::is_stackable_panel_id(id)
+                    && NavItem::from_persistence_id(id)
+                        .is_none_or(crate::features::product_profile::panel_offered)
+                {
                     ordered.push(id.clone());
                 }
             }
@@ -253,6 +258,9 @@ impl NyaTermApp {
     /// multi-open stack shows all of them.
     ///
     pub(in crate::features) fn panel_is_rendered(&self, item: NavItem) -> bool {
+        if !crate::features::product_profile::panel_offered(item) {
+            return false;
+        }
         if self.shell.main_mode() == MainMode::Page
             && self.shell.selected_nav() == NavItem::Settings
         {

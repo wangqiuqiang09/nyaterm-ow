@@ -102,6 +102,7 @@ fn native_menu_contains_every_window_menu_command_and_existing_extra_commands() 
             TitleMenu::File,
             TitleMenu::View,
             TitleMenu::Terminal,
+            TitleMenu::Panels,
             TitleMenu::Help,
         ]
         .into_iter()
@@ -138,10 +139,11 @@ fn native_menu_contains_every_window_menu_command_and_existing_extra_commands() 
             &t!("menu.edit"),
             &t!("menu.view"),
             &t!("menu.terminal"),
+            &t!("menu.panels"),
             &t!("menu.help")
         ]
     );
-    assert!(find_item(&menus[5].items, &TitleMenuCommand::About).is_none());
+    assert!(find_item(&menus[6].items, &TitleMenuCommand::About).is_none());
 }
 
 #[test]

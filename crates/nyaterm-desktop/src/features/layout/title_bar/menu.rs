@@ -7,6 +7,7 @@ use nyaterm_ui::{NyaAppMenuBar, NyaDialogWindowExt as _, NyaMenuItem};
 
 use super::definition::{TitleMenuCommand, TitleMenuDefinition, TitleMenuKind};
 use crate::features::NyaTermApp;
+use crate::features::product_profile;
 use crate::models::{
     ActivityBarEntry, ActivityBarZone, HeaderStatusMode, NavItem, PanelOpenMode, PanelSide,
     SmartSplitMode, TitleMenu,
@@ -33,6 +34,7 @@ impl NyaTermApp {
             TitleMenu::View,
             TitleMenu::Terminal,
             TitleMenu::Help,
+            TitleMenu::Panels,
         ]
         .into_iter()
         .find_map(|menu| find(&self.title_menu_definitions(menu, cx), command))
@@ -168,6 +170,7 @@ impl NyaTermApp {
                     self.hide_activity_entry(id.clone(), cx);
                 }
             }
+            TitleMenuCommand::ShowPanel(item) => self.open_panel(*item, cx),
             TitleMenuCommand::TogglePadding => self.toggle_terminal_workspace_padding(cx),
             TitleMenuCommand::ToggleLineNumbers => self.toggle_terminal_line_numbers(cx),
             TitleMenuCommand::ToggleTimestamps => self.toggle_terminal_timestamps(cx),
@@ -270,6 +273,7 @@ impl NyaTermApp {
             TitleMenu::View => self.title_view_menu_items(cx),
             TitleMenu::Terminal => self.title_terminal_menu_items(cx),
             TitleMenu::Help => self.title_help_menu_items(cx),
+            TitleMenu::Panels => self.title_open_panel_menu_items(cx),
         }
     }
 
@@ -325,7 +329,7 @@ impl NyaTermApp {
                 ),
             )
             .icon("icons/menu/info.svg"),
-            TitleMenuDefinition::submenu(t!("menu.panels"), self.title_panels_menu_items(cx))
+            TitleMenuDefinition::submenu(t!("menu.layout"), self.title_panels_menu_items(cx))
                 .icon("icons/menu/sidebar.svg"),
             TitleMenuDefinition::separator(),
             TitleMenuDefinition::action(t!("menu.zoomIn"))
@@ -528,6 +532,61 @@ impl NyaTermApp {
                 .danger()
                 .command(TitleMenuCommand::ResetPanelLayout),
         ]
+    }
+
+    fn title_open_panel_menu_items(&self, _cx: &App) -> Vec<TitleMenuDefinition> {
+        let mut items = Vec::new();
+        for side in [PanelSide::Left, PanelSide::Right] {
+            let entries = self.title_open_panel_side_entries(side);
+            if entries.is_empty() {
+                continue;
+            }
+            if !items.is_empty() {
+                items.push(TitleMenuDefinition::separator());
+            }
+            items.extend(entries);
+        }
+        if items.is_empty() {
+            items.push(TitleMenuDefinition::action(t!("activityBar.noPanels")).disabled(true));
+        }
+        items
+    }
+
+    fn title_open_panel_side_entries(&self, side: PanelSide) -> Vec<TitleMenuDefinition> {
+        let zones = match side {
+            PanelSide::Left => [ActivityBarZone::LeftTop, ActivityBarZone::LeftBottom],
+            PanelSide::Right => [ActivityBarZone::RightTop, ActivityBarZone::RightBottom],
+        };
+        let open = match side {
+            PanelSide::Left => !self.shell.panels.left_collapsed,
+            PanelSide::Right => !self.shell.panels.right_collapsed,
+        };
+        let active = match side {
+            PanelSide::Left => self.shell.panels.active_left,
+            PanelSide::Right => self.shell.panels.active_right,
+        };
+        zones
+            .into_iter()
+            .flat_map(|zone| self.shell.activity_bar_layout().zone(zone))
+            .filter_map(|id| NavItem::from_persistence_id(id))
+            .filter(|item| {
+                product_profile::panel_offered(*item)
+                    && !item.opens_settings()
+                    && match side {
+                        PanelSide::Left => item.is_left_panel(),
+                        PanelSide::Right => item.is_right_panel(),
+                    }
+            })
+            .map(|item| {
+                let label = item
+                    .i18n_key()
+                    .map(|key| t!(key).to_string())
+                    .unwrap_or_else(|| item.label().to_string());
+                TitleMenuDefinition::action(label)
+                    .checked(open && active == Some(item))
+                    .command(TitleMenuCommand::ShowPanel(item))
+            })
+            .collect()
     }
 
     fn title_side_panel_menu_items(&self, side: PanelSide, _cx: &App) -> Vec<TitleMenuDefinition> {
@@ -820,10 +879,11 @@ mod tests {
             TitleMenu::View,
             TitleMenu::Terminal,
             TitleMenu::Help,
+            TitleMenu::Panels,
         ]
         .map(TitleMenu::label);
 
-        assert_eq!(labels, ["File", "View", "Terminal", "Help"]);
+        assert_eq!(labels, ["File", "View", "Terminal", "Help", "Panels"]);
         assert!(!labels.contains(&"Edit"));
     }
 
@@ -890,7 +950,7 @@ mod tests {
         assert!(labels.contains(&"Terminal Theme"));
         assert!(labels.contains(&"Language"));
         assert!(labels.contains(&"Header Status"));
-        assert!(labels.contains(&"Panels"));
+        assert!(labels.contains(&"Layout"));
         assert!(labels.contains(&"Zoom In"));
         assert!(labels.contains(&"Zoom Out"));
         assert!(labels.contains(&"Reset Zoom"));
@@ -971,7 +1031,7 @@ mod tests {
         });
         let panels = items
             .iter()
-            .find(|item| item.test_label() == "Panels")
+            .find(|item| item.test_label() == "Layout")
             .expect("panels submenu");
         let submenu = panels.children().expect("panels submenu children");
         let labels = submenu
