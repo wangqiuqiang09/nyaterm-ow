@@ -715,7 +715,7 @@ impl NyaTermApp {
         data: &[u8],
         cx: &mut Context<Self>,
     ) {
-        if data.is_empty() {
+        if !crate::features::product_profile::SHOW_AI || data.is_empty() {
             return;
         }
         let watched = self.session.active_id() == Some(session_id)

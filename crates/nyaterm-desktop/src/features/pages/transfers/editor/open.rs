@@ -19,7 +19,8 @@ impl NyaTermApp {
         &self,
         entry: &SftpFileEntry,
     ) -> Vec<AiCustomActionConfig> {
-        if !self.ai.settings_config().enabled
+        if !crate::features::product_profile::SHOW_AI
+            || !self.ai.settings_config().enabled
             || entry.is_directory()
             || entry
                 .size

@@ -248,61 +248,63 @@ impl NyaTermApp {
                                     ),
                                 ),
                             )
-                            .child(
-                                div().when(!has_visible_text, |this| this.opacity(0.45)).child(
-                                    tab_action_button(
-                                        palette,
-                                        "terminal-actions-ai-visible",
-                                        t!("ai.title"),
-                                        t!("terminalActions.visibleScreen"),
-                                        cx.listener(move |this, _, window, cx| {
-                                            this.terminal.close_actions();
-                                            if visible_for_ai.trim().is_empty() {
-                                                this.ai.set_panel_status(
-                                                    "terminal visible screen is empty",
-                                                );
-                                            } else {
-                                                this.set_ai_prompt_draft(format!(
-                                                    "Explain this terminal output:\n\n{}",
-                                                    visible_for_ai
-                                                ), cx);
-                                                this.ai.set_panel_status(
-                                                    "terminal output loaded into AI prompt",
-                                                );
-                                                window.focus(this.ai.chat_focus(), cx);
-                                            }
-                                            cx.notify();
-                                        }),
-                                    ),
-                                ),
-                            )
-                            .child(
-                                div().when(!has_buffer_text, |this| this.opacity(0.45)).child(
-                                    tab_action_button(
-                                        palette,
-                                        "terminal-actions-ai-buffer",
-                                        t!("terminalActions.aiBuffer"),
-                                        t!("terminalActions.bufferContext"),
-                                        cx.listener(move |this, _, window, cx| {
-                                            this.terminal.close_actions();
-                                            if buffer_for_ai.trim().is_empty() {
-                                                this.ai
-                                                    .set_panel_status("terminal buffer is empty");
-                                            } else {
-                                                this.set_ai_prompt_draft(format!(
-                                                    "Review this terminal buffer and summarize issues or next actions:\n\n{}",
-                                                    buffer_for_ai
-                                                ), cx);
-                                                this.ai.set_panel_status(
-                                                    "terminal buffer loaded into AI prompt",
-                                                );
-                                                window.focus(this.ai.chat_focus(), cx);
-                                            }
-                                            cx.notify();
-                                        }),
-                                    ),
-                                ),
-                            )
+                            .when(crate::features::product_profile::SHOW_AI, |this| {
+                                this.child(
+                                    div()
+                                        .when(!has_visible_text, |this| this.opacity(0.45))
+                                        .child(tab_action_button(
+                                            palette,
+                                            "terminal-actions-ai-visible",
+                                            t!("ai.title"),
+                                            t!("terminalActions.visibleScreen"),
+                                            cx.listener(move |this, _, window, cx| {
+                                                this.terminal.close_actions();
+                                                if visible_for_ai.trim().is_empty() {
+                                                    this.ai.set_panel_status(
+                                                        "terminal visible screen is empty",
+                                                    );
+                                                } else {
+                                                    this.set_ai_prompt_draft(format!(
+                                                        "Explain this terminal output:\n\n{}",
+                                                        visible_for_ai
+                                                    ), cx);
+                                                    this.ai.set_panel_status(
+                                                        "terminal output loaded into AI prompt",
+                                                    );
+                                                    window.focus(this.ai.chat_focus(), cx);
+                                                }
+                                                cx.notify();
+                                            }),
+                                        )),
+                                )
+                                .child(
+                                    div()
+                                        .when(!has_buffer_text, |this| this.opacity(0.45))
+                                        .child(tab_action_button(
+                                            palette,
+                                            "terminal-actions-ai-buffer",
+                                            t!("terminalActions.aiBuffer"),
+                                            t!("terminalActions.bufferContext"),
+                                            cx.listener(move |this, _, window, cx| {
+                                                this.terminal.close_actions();
+                                                if buffer_for_ai.trim().is_empty() {
+                                                    this.ai
+                                                        .set_panel_status("terminal buffer is empty");
+                                                } else {
+                                                    this.set_ai_prompt_draft(format!(
+                                                        "Review this terminal buffer and summarize issues or next actions:\n\n{}",
+                                                        buffer_for_ai
+                                                    ), cx);
+                                                    this.ai.set_panel_status(
+                                                        "terminal buffer loaded into AI prompt",
+                                                    );
+                                                    window.focus(this.ai.chat_focus(), cx);
+                                                }
+                                                cx.notify();
+                                            }),
+                                        )),
+                                )
+                            })
                             .child(tab_action_button(
                                 palette,
                                 "terminal-actions-command-send",

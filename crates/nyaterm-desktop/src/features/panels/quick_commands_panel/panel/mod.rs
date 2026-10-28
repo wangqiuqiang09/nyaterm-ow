@@ -443,18 +443,20 @@ impl NyaTermApp {
                             this.prompt_quick_command_export(cx);
                         }),
                     ))
-                    .child(quick_command_toolbar_divider(palette))
-                    .child(quick_command_ai_popover_button(
-                        toolbar_context,
-                        QuickCommandAiPopoverConfig {
-                            open: self.commands.quick_ai_popover_is_open(),
-                            prompt: self.commands.quick_ai_prompt_draft().to_string(),
-                            prompt_input: ai_prompt_input,
-                            button_label: t!("ai.generateCommand"),
-                            generate_label: t!("ai.generate"),
-                        },
-                        cx,
-                    )),
+                    .when(crate::features::product_profile::SHOW_AI, |this| {
+                        this.child(quick_command_toolbar_divider(palette))
+                            .child(quick_command_ai_popover_button(
+                                toolbar_context,
+                                QuickCommandAiPopoverConfig {
+                                    open: self.commands.quick_ai_popover_is_open(),
+                                    prompt: self.commands.quick_ai_prompt_draft().to_string(),
+                                    prompt_input: ai_prompt_input,
+                                    button_label: t!("ai.generateCommand"),
+                                    generate_label: t!("ai.generate"),
+                                },
+                                cx,
+                            ))
+                    }),
             )
             .child(
                 div()

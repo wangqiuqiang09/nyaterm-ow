@@ -65,17 +65,19 @@ impl NyaTermApp {
                                     this.open_temporary_ssh_link_dialog(window, cx);
                                 }),
                             ))
-                            .child(empty_workspace_action(
-                                palette,
-                                open_chat_label,
-                                open_chat,
-                                cx.listener(|this, _, window, cx| {
-                                    this.ensure_panel_open(NavItem::AiAssistant, cx);
-                                    window.focus(this.ai.chat_focus(), cx);
-                                    this.ai.set_panel_status("AI assistant focused");
-                                    cx.notify();
-                                }),
-                            ))
+                            .when(crate::features::product_profile::SHOW_AI, |this| {
+                                this.child(empty_workspace_action(
+                                    palette,
+                                    open_chat_label,
+                                    open_chat,
+                                    cx.listener(|this, _, window, cx| {
+                                        this.ensure_panel_open(NavItem::AiAssistant, cx);
+                                        window.focus(this.ai.chat_focus(), cx);
+                                        this.ai.set_panel_status("AI assistant focused");
+                                        cx.notify();
+                                    }),
+                                ))
+                            })
                             .child(empty_workspace_action(
                                 palette,
                                 show_commands_label,

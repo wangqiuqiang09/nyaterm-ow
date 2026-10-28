@@ -241,10 +241,12 @@ impl NyaTermApp {
                 self.execute_title_menu_command(&TitleMenuCommand::OpenSettings, window, cx)
             }
             ShortcutId::OpenChat => {
-                self.ensure_panel_open(NavItem::AiAssistant, cx);
-                window.focus(self.ai.chat_focus(), cx);
-                self.shell.set_status("AI panel focused".to_string());
-                cx.notify();
+                if crate::features::product_profile::SHOW_AI {
+                    self.ensure_panel_open(NavItem::AiAssistant, cx);
+                    window.focus(self.ai.chat_focus(), cx);
+                    self.shell.set_status("AI panel focused".to_string());
+                    cx.notify();
+                }
             }
             ShortcutId::ShowAllCommands => {
                 self.set_bottom_panel_mode(BottomPanelMode::QuickCommands);

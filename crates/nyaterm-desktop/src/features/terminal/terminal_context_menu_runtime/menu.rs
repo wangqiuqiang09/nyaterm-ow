@@ -401,7 +401,7 @@ impl NyaTermApp {
         selected: &str,
         cx: &mut Context<Self>,
     ) -> Vec<NyaMenuItem> {
-        if !self.ai.settings_config().enabled {
+        if !crate::features::product_profile::SHOW_AI || !self.ai.settings_config().enabled {
             return Vec::new();
         }
         self.ai

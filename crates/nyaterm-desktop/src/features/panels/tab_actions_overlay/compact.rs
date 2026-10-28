@@ -107,6 +107,7 @@ impl NyaTermApp {
         } = state;
         let support = policy.support;
         let availability = policy.availability;
+        let show_ai_actions = support.ai && crate::features::product_profile::SHOW_AI;
         let menu_groups = policy.menu_groups();
         let show_session_group = menu_groups.contains(&TabActionMenuGroup::Session);
         let show_split_group = menu_groups.contains(&TabActionMenuGroup::Split);
@@ -707,7 +708,7 @@ impl NyaTermApp {
                                     }),
                                 ))
                             })
-                            .when(support.ai, |this| {
+                            .when(show_ai_actions, |this| {
                                 this.child(tab_actions_submenu_host(
                                     "tab-actions-ai-submenu",
                                     tab_actions_submenu_item(

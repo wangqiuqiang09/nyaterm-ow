@@ -91,6 +91,10 @@ impl SettingsPanel {
             .iter()
             .filter(|shortcut| shortcut.category == category)
             .filter(|shortcut| {
+                crate::features::product_profile::SHOW_AI
+                    || shortcut.id != crate::shortcuts::ShortcutId::OpenChat
+            })
+            .filter(|shortcut| {
                 if needle.is_empty() {
                     return true;
                 }

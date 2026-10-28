@@ -1240,7 +1240,7 @@ impl SettingsPanel {
 
     fn settings_nav_groups(&self, snapshot: &SettingsSnapshot) -> Vec<NyaSettingsNavGroup> {
         let palette = snapshot.chrome.palette;
-        vec![
+        let mut groups = vec![
             NyaSettingsNavGroup::new(
                 "workspace",
                 t!("settings.groupWorkspace"),
@@ -1267,21 +1267,26 @@ impl SettingsPanel {
                 settings_nav_item(SettingsTab::Translation),
                 settings_nav_item(SettingsTab::RemoteMonitoring),
             ]),
-            NyaSettingsNavGroup::new("ai_group", t!("ai.title"), "icons/settings/ai.svg")
-                .accent(0xbc8cff)
-                .expanded(snapshot.group_is_expanded("ai_group"))
-                .items([
-                    settings_nav_item(SettingsTab::AiGeneral),
-                    settings_nav_item(SettingsTab::AiModels),
-                    settings_nav_item(SettingsTab::AiAgents),
-                    settings_nav_item(SettingsTab::AiRules),
-                ]),
-            NyaSettingsNavGroup::standalone([
-                settings_nav_item(SettingsTab::Transfer),
-                settings_nav_item(SettingsTab::Security),
-                settings_nav_item(SettingsTab::SyncBackup),
-            ]),
-        ]
+        ];
+        if crate::features::product_profile::SHOW_AI {
+            groups.push(
+                NyaSettingsNavGroup::new("ai_group", t!("ai.title"), "icons/settings/ai.svg")
+                    .accent(0xbc8cff)
+                    .expanded(snapshot.group_is_expanded("ai_group"))
+                    .items([
+                        settings_nav_item(SettingsTab::AiGeneral),
+                        settings_nav_item(SettingsTab::AiModels),
+                        settings_nav_item(SettingsTab::AiAgents),
+                        settings_nav_item(SettingsTab::AiRules),
+                    ]),
+            );
+        }
+        groups.push(NyaSettingsNavGroup::standalone([
+            settings_nav_item(SettingsTab::Transfer),
+            settings_nav_item(SettingsTab::Security),
+            settings_nav_item(SettingsTab::SyncBackup),
+        ]));
+        groups
     }
 
     fn settings_tab_content(

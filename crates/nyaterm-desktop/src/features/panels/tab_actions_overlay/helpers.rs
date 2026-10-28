@@ -14,7 +14,7 @@ pub(super) fn tab_actions_menu_content_height(policy: TabActionPolicy) -> f32 {
         + usize::from(support.ssh_multiplex)
         + usize::from(support.reconnect)
         + usize::from(support.disconnect)
-        + usize::from(support.ai)
+        + usize::from(support.ai && crate::features::product_profile::SHOW_AI)
         + usize::from(support.rdp_secure_attention);
     // Tauri always exposes Merge All Panes for terminal sessions. Flattening an
     // already-flat workspace is a harmless no-op.
