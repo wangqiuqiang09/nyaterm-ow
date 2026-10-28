@@ -17,6 +17,7 @@ mod pages;
 mod panels;
 mod perf;
 pub(crate) mod plugins;
+mod product_profile;
 mod recording;
 mod remote;
 mod remote_desktop;

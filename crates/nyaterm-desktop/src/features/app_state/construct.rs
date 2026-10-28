@@ -117,6 +117,12 @@ impl NyaTermApp {
             ..
         } = bootstrap;
         let mut settings = settings;
+        let mut ai_settings = ai_settings;
+        if !crate::features::product_profile::SHOW_AI {
+            // The product profile hides AI entry points. Keep persisted settings
+            // untouched, but do not let legacy enablement start background work.
+            ai_settings.enabled = false;
+        }
         // Localized child views cache placeholders while they are constructed, so
         // the persisted locale must be active before any of those entities exist.
         crate::i18n::apply_locale(&settings.language);
@@ -174,6 +180,7 @@ impl NyaTermApp {
             .and_then(NavItem::from_persistence_id)
             .filter(|item| {
                 activity_bar_layout.side_for_entry(item.persistence_id()) == Some(PanelSide::Left)
+                    && crate::features::product_profile::panel_offered(*item)
             });
         let mut active_right_panel = settings
             .ui_active_right_panel
@@ -181,22 +188,31 @@ impl NyaTermApp {
             .and_then(NavItem::from_persistence_id)
             .filter(|item| {
                 activity_bar_layout.side_for_entry(item.persistence_id()) == Some(PanelSide::Right)
+                    && crate::features::product_profile::panel_offered(*item)
             });
+        let mut left_open_panels = settings.ui_left_open_panels.clone();
+        let mut right_open_panels = settings.ui_right_open_panels.clone();
+        left_open_panels.retain(|id| {
+            NavItem::from_persistence_id(id)
+                .is_none_or(crate::features::product_profile::panel_offered)
+        });
+        right_open_panels.retain(|id| {
+            NavItem::from_persistence_id(id)
+                .is_none_or(crate::features::product_profile::panel_offered)
+        });
         let mut left_sidebar_collapsed = panel_collapsed_from_persistence(
             settings.ui_left_panel_collapsed,
             settings.ui_panel_multi_open,
             active_left_panel.is_some(),
-            !settings.ui_left_open_panels.is_empty(),
+            !left_open_panels.is_empty(),
         );
         let mut right_inspector_collapsed = panel_collapsed_from_persistence(
             settings.ui_right_panel_collapsed,
             settings.ui_panel_multi_open,
             active_right_panel.is_some(),
-            !settings.ui_right_open_panels.is_empty(),
+            !right_open_panels.is_empty(),
         );
         let security_secrets_unlocked = !settings.has_master_password;
-        let mut left_open_panels = settings.ui_left_open_panels.clone();
-        let mut right_open_panels = settings.ui_right_open_panels.clone();
         let panel_stack_sizes = settings
             .ui_panel_stack_sizes
             .iter()
@@ -207,7 +223,9 @@ impl NyaTermApp {
         let panel_open_mode =
             crate::models::PanelOpenMode::from_setting(&settings.ui_panel_open_mode);
         let selected_nav = NavItem::from_persistence_id(&workspace_ui.current_page)
-            .filter(|item| !item.opens_settings())
+            .filter(|item| {
+                !item.opens_settings() && crate::features::product_profile::panel_offered(*item)
+            })
             .unwrap_or(NavItem::Workspace);
         if panel_open_mode.is_floating() {
             active_left_panel = None;
