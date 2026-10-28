@@ -697,7 +697,7 @@ pub struct KeywordHighlightImportResult {
 impl Default for AppSettingsSummary {
     fn default() -> Self {
         Self {
-            theme: "github-dark".to_string(),
+            theme: "windterm-dark".to_string(),
             background_image_path: None,
             background_image_fit: default_background_image_fit(),
             background_image_opacity: default_background_image_opacity(),
@@ -706,8 +706,8 @@ impl Default for AppSettingsSummary {
             window_decorations: WindowDecoration::default(),
             window_background_opacity: default_window_background_opacity(),
             language: "zh-CN".to_string(),
-            terminal_font_family: "JetBrains Mono".to_string(),
-            terminal_font_size: 16,
+            terminal_font_family: default_terminal_font_family().to_string(),
+            terminal_font_size: 13,
             cursor_style: default_cursor_style(),
             cursor_blink: default_cursor_blink(),
             custom_themes: crate::themes::ThemeCatalog::default(),
@@ -971,12 +971,18 @@ fn default_minimum_contrast_ratio() -> String {
     "1".to_string()
 }
 
+/// WindTerm's bundled Roboto Mono first, then widely available monospace
+/// faces so a fresh install still resolves a real family.
+fn default_terminal_font_family() -> &'static str {
+    "Roboto Mono, Fira Code, JetBrains Mono, Consolas"
+}
+
 fn default_ui_font_family() -> String {
-    "Inter".to_string()
+    "Roboto Mono, Fira Code, JetBrains Mono, Consolas".to_string()
 }
 
 fn default_ui_font_size() -> u16 {
-    16
+    12
 }
 
 fn default_terminal_font_weight() -> u16 {

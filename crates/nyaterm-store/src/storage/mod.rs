@@ -1836,9 +1836,9 @@ fn default_settings_value() -> serde_json::Value {
             "confirm_on_close": true
         },
         "appearance": {
-            "theme": "github-dark",
-            "font_family": "JetBrains Mono",
-            "font_size": 16.0
+            "theme": "windterm-dark",
+            "font_family": "Roboto Mono, Fira Code, JetBrains Mono, Consolas",
+            "font_size": 13.0
         },
         "translation": {
             "target_language": "zh-CN",

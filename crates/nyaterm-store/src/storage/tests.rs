@@ -75,7 +75,7 @@ fn theme_commits_are_atomic_and_preserve_unrelated_settings_and_unknown_fields()
     else {
         panic!("unexpected conflict");
     };
-    assert_eq!(deleted.settings.ui, "github-dark");
+    assert_eq!(deleted.settings.ui, "windterm-dark");
     assert!(deleted.settings.catalog.available().is_empty());
     assert_eq!(
         store.load_settings_value().unwrap()["appearance"]["custom_themes"],

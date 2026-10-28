@@ -83,7 +83,7 @@ impl ConnectionStore {
             window_material,
             window_decorations,
             window_background_opacity,
-            theme: json_string(&value, &["appearance", "theme"], "github-dark"),
+            theme: json_string(&value, &["appearance", "theme"], "windterm-dark"),
             custom_themes: json_path(&value, &["appearance", "custom_themes"])
                 .cloned()
                 .map(nyaterm_core::themes::ThemeCatalog)
@@ -130,9 +130,9 @@ impl ConnectionStore {
             terminal_font_family: json_string(
                 &value,
                 &["appearance", "font_family"],
-                "JetBrains Mono",
+                "Roboto Mono, Fira Code, JetBrains Mono, Consolas",
             ),
-            terminal_font_size: json_u16(&value, &["appearance", "font_size"], 16),
+            terminal_font_size: json_u16(&value, &["appearance", "font_size"], 13),
             cursor_style: {
                 let raw = json_string(&value, &["appearance", "cursor_style"], "block");
                 match raw.as_str() {
@@ -163,8 +163,12 @@ impl ConnectionStore {
                     _ => "1".to_string(),
                 }
             },
-            ui_font_family: json_string(&value, &["appearance", "ui_font_family"], "Inter"),
-            ui_font_size: json_u16(&value, &["appearance", "ui_font_size"], 16).clamp(12, 24),
+            ui_font_family: json_string(
+                &value,
+                &["appearance", "ui_font_family"],
+                "Roboto Mono, Fira Code, JetBrains Mono, Consolas",
+            ),
+            ui_font_size: json_u16(&value, &["appearance", "ui_font_size"], 12).clamp(12, 24),
             terminal_font_weight: {
                 let w = json_u16(&value, &["appearance", "font_weight"], 400);
                 match w {

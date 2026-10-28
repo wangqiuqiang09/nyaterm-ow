@@ -178,7 +178,7 @@ fn catalog_preserves_unknown_fields_and_unsupported_records() {
     );
     assert_eq!(catalog.records()[1], broken);
     assert!(catalog.resolve("broken").is_none());
-    assert_eq!(resolve_theme("broken", &catalog).id, "github-dark");
+    assert_eq!(resolve_theme("broken", &catalog).id, crate::themes::DEFAULT_THEME_ID);
 }
 #[test]
 fn import_collisions_get_new_ids_and_invalid_colors_do_not_mutate_catalog() {

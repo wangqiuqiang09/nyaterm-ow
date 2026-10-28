@@ -5,7 +5,7 @@ use serde_json::Value;
 use std::collections::{BTreeMap, HashSet};
 use std::sync::OnceLock;
 
-pub const DEFAULT_THEME_ID: &str = "github-dark";
+pub const DEFAULT_THEME_ID: &str = "windterm-dark";
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ThemeConfig {
@@ -212,6 +212,7 @@ pub fn resolve_theme(id: &str, catalog: &ThemeCatalog) -> ThemeConfig {
     catalog
         .resolve(id)
         .or_else(|| builtins().iter().find(|t| t.id == id).cloned())
+        .or_else(|| builtins().iter().find(|t| t.id == DEFAULT_THEME_ID).cloned())
         .unwrap_or_else(|| builtins()[0].clone())
 }
 /// RGBA bytes, kept independent of any UI framework.

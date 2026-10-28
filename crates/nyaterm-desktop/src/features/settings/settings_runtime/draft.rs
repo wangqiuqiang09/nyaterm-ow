@@ -1791,7 +1791,10 @@ mod tests {
         });
         finish_theme_jobs(&app, &mut cx);
         cx.update_entity(&app, |app, cx| {
-            assert_eq!(app.settings.summary().theme, "github-dark");
+            assert_eq!(
+                app.settings.summary().theme,
+                nyaterm_core::themes::DEFAULT_THEME_ID
+            );
             assert_eq!(app.settings.summary().terminal_theme, None);
             assert!(app.settings.summary().custom_themes.available().is_empty());
             assert_eq!(app.settings.summary().terminal_font_size, 28);
